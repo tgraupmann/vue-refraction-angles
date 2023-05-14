@@ -39,12 +39,12 @@
       <div style="display: flex; flex-direction: row; gap: 50px">
         <label>Angle of incidence (degrees)</label>
         <input type="text" :value="deg1" @input="inputDeg1"></input>
-        <label v-if="deg1">{{ deg1.toFixed(1) }}</label>
+        <label v-if="deg1">{{ Number(deg1).toFixed(1) }}</label>
       </div>
       <div style="display: flex; flex-direction: row; gap: 50px">
         <label>Angle of refraction (degrees)</label>
         <input type="text" :value="deg2" @input="inputDeg2"></input>
-        <label v-if="deg2">{{ deg2.toFixed(1) }}</label>
+        <label v-if="deg2">{{ Number(deg2).toFixed(1) }}</label>
       </div>
     </div>`,
     methods: {
@@ -76,11 +76,13 @@
           rad1 = -rad1;
         }
         let deg1 = rad1 * 180 / Math.PI; // degrees
+        /*
         console.log('calculateIncidenceAngle:',
           'n1=', n1, 'n2=', n2,
           'ratio =', ratio.toPrecision(3),
           'deg1=', deg1.toFixed(1),
-          'deg2=', deg2.toPrecision(3));
+          'deg2=', deg2.toFixed(1));
+        */
         return deg1;
       },
       calculateRefractionAngle(n1, n2, deg1) {
@@ -92,6 +94,13 @@
           rad2 = -rad2;
         }
         let deg2 = rad2 * 180 / Math.PI; // degrees
+        /*
+        console.log('calculateRefractionAngle:',
+          'n1=', n1, 'n2=', n2,
+          'ratio =', ratio.toPrecision(3),
+          'deg1=', deg1.toFixed(1),
+          'deg2=', deg2.toFixed(1));
+        */
         return deg2;
       },
     },
