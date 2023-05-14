@@ -50,65 +50,77 @@
     methods: {
       inputMedium1(evt) {
         this.medium1 = Number(evt.target.value);
-        this.deg2 = this.calculateRefractionAngle(Number(this.medium1), Number(this.medium2), Number(this.deg1));
+        this.calculate();
       },
       inputMedium2(evt) {
         this.medium2 = Number(evt.target.value);
-        this.deg2 = this.calculateRefractionAngle(Number(this.medium1), Number(this.medium2), Number(this.deg1));
+        this.calculate();
       },
       inputDeg1(evt) {
-        this.deg2 = ''; // clear other calculated field
         this.deg1 = Number(evt.target.value);
-        this.deg2 = this.calculateRefractionAngle(Number(this.medium1), Number(this.medium2), Number(this.deg1));
+        this.mode = 0;
+        this.calculate();
       },
       inputDeg2(evt) {
-        this.deg1 = ''; // clear other calculated field
         this.deg2 = evt.target.value;
-        this.deg1 = this.calculateIncidenceAngle(Number(this.medium1), Number(this.medium2), Number(this.deg2));
+        this.mode = 1;
+        this.calculate();
       },
       calculateIncidenceAngle(n1, n2, deg2) {
-        const min = Math.min(n1, n2);
-        const max = Math.max(n1, n2);
         const rad2 = deg2 / 180 * Math.PI; // radians
-        let ratio = Math.sin(rad2);
-        let rad1 = Math.asin(max / min * ratio); // radians
-        if (n1 > n2) {
-          rad1 = -rad1;
+        let ratio = n2 / n1 * Math.sin(rad2);
+        if (ratio < -1) {
+          ratio = -1;
+        } else if (ratio > 1) {
+          ratio = 1;
         }
+        let rad1 = Math.asin(ratio); // radians
         let deg1 = rad1 * 180 / Math.PI; // degrees
         /*
         console.log('calculateIncidenceAngle:',
-          'n1=', n1, 'n2=', n2,
-          'ratio =', ratio.toPrecision(3),
+          'n1=', n1,
+          'n2=', n2,
           'deg1=', deg1.toFixed(1),
           'deg2=', deg2.toFixed(1));
         */
         return deg1;
       },
       calculateRefractionAngle(n1, n2, deg1) {
-        const min = Math.min(n1, n2);
-        const max = Math.max(n1, n2);
         const rad1 = deg1 / 180 * Math.PI; // radians
-        let rad2 = Math.asin(min / max * Math.sin(rad1)); // radians
-        if (n1 > n2) {
-          rad2 = -rad2;
+        let ratio = n1 / n2 * Math.sin(rad1);
+        if (ratio < -1) {
+          ratio = -1;
+        } else if (ratio > 1) {
+          ratio = 1;
         }
+        let rad2 = Math.asin(ratio); // radians
         let deg2 = rad2 * 180 / Math.PI; // degrees
         /*
         console.log('calculateRefractionAngle:',
-          'n1=', n1, 'n2=', n2,
-          'ratio =', ratio.toPrecision(3),
+          'n1=', n1,
+          'n2=', n2,
           'deg1=', deg1.toFixed(1),
           'deg2=', deg2.toFixed(1));
         */
         return deg2;
       },
+      calculate() {
+        switch (this.mode) {
+          case 0:
+            this.deg2 = this.calculateRefractionAngle(Number(this.medium1), Number(this.medium2), Number(this.deg1));
+            break;
+          case 1:
+            this.deg1 = this.calculateIncidenceAngle(Number(this.medium1), Number(this.medium2), Number(this.deg2));
+            break;
+        }
+      },
     },
     mounted() {
-      this.deg2 = this.calculateRefractionAngle(Number(this.medium1), Number(this.medium2), Number(this.deg1));
+      this.calculate();
     },
     data() {
       return {
+        mode: 0,
         medium1: 1.33,
         medium2: 1.5,
         deg1: 35,
