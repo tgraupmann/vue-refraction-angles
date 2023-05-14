@@ -1,0 +1,119 @@
+<html>
+
+<head>
+  <title>Vue Refraction Angle Calculator</title>
+  <style>
+    body {
+      margin: 20px;
+      padding: 0px;
+      background: black;
+      color: white;
+      font-size: 2em;
+    }
+  </style>
+  <!-- import JavaScript for Vue -->
+  <script src="vue/vue.js"></script>
+  <script src="vue/index.js"></script>
+  <script src="vue/en.js"></script>
+</head>
+
+<body>
+  <div id="root">
+    <vue-app></vue-app>
+  </div>
+</body>
+
+<script>
+
+  Vue.component(
+    'vue-app', {
+    template: `<div style="display: flex; flex-direction: column; gap: 20px">
+      <div style="display: flex; flex-direction: row; gap: 50px">
+        <label>Medium 1</label>
+        <input type="text" :value="medium1" @input="inputMedium1"></input>
+      </div>
+      <div style="display: flex; flex-direction: row; gap: 50px">
+        <label>Medium 2</label>
+        <input type="text" :value="medium2" @input="inputMedium2"></input>
+      </div>
+      <div style="display: flex; flex-direction: row; gap: 50px">
+        <label>Angle of incidence (degrees)</label>
+        <input type="text" :value="deg1" @input="inputDeg1"></input>
+        <label v-if="deg1">{{ deg1.toFixed(1) }}</label>
+      </div>
+      <div style="display: flex; flex-direction: row; gap: 50px">
+        <label>Angle of refraction (degrees)</label>
+        <input type="text" :value="deg2" @input="inputDeg2"></input>
+        <label v-if="deg2">{{ deg2.toFixed(1) }}</label>
+      </div>
+    </div>`,
+    methods: {
+      inputMedium1(evt) {
+        this.medium1 = Number(evt.target.value);
+        this.deg2 = this.calculateRefractionAngle(Number(this.medium1), Number(this.medium2), Number(this.deg1));
+      },
+      inputMedium2(evt) {
+        this.medium2 = Number(evt.target.value);
+        this.deg2 = this.calculateRefractionAngle(Number(this.medium1), Number(this.medium2), Number(this.deg1));
+      },
+      inputDeg1(evt) {
+        this.deg2 = ''; // clear other calculated field
+        this.deg1 = Number(evt.target.value);
+        this.deg2 = this.calculateRefractionAngle(Number(this.medium1), Number(this.medium2), Number(this.deg1));
+      },
+      inputDeg2(evt) {
+        this.deg1 = ''; // clear other calculated field
+        this.deg2 = evt.target.value;
+        this.deg1 = this.calculateIncidenceAngle(Number(this.medium1), Number(this.medium2), Number(this.deg2));
+      },
+      calculateIncidenceAngle(n1, n2, deg2) {
+        const min = Math.min(n1, n2);
+        const max = Math.max(n1, n2);
+        const rad2 = deg2 / 180 * Math.PI; // radians
+        let ratio = Math.sin(rad2);
+        let rad1 = Math.asin(max / min * ratio); // radians
+        if (n1 > n2) {
+          rad1 = -rad1;
+        }
+        let deg1 = rad1 * 180 / Math.PI; // degrees
+        console.log('calculateIncidenceAngle:',
+          'n1=', n1, 'n2=', n2,
+          'ratio =', ratio.toPrecision(3),
+          'deg1=', deg1.toFixed(1),
+          'deg2=', deg2.toPrecision(3));
+        return deg1;
+      },
+      calculateRefractionAngle(n1, n2, deg1) {
+        const min = Math.min(n1, n2);
+        const max = Math.max(n1, n2);
+        const rad1 = deg1 / 180 * Math.PI; // radians
+        let rad2 = Math.asin(min / max * Math.sin(rad1)); // radians
+        if (n1 > n2) {
+          rad2 = -rad2;
+        }
+        let deg2 = rad2 * 180 / Math.PI; // degrees
+        return deg2;
+      },
+    },
+    mounted() {
+      this.deg2 = this.calculateRefractionAngle(Number(this.medium1), Number(this.medium2), Number(this.deg1));
+    },
+    data() {
+      return {
+        medium1: 1.33,
+        medium2: 1.5,
+        deg1: 35,
+        deg2: '',
+      }
+    }
+  });
+
+  var vue = new Vue({
+    el: '#root',
+    data: {
+    }
+  });
+
+</script>
+
+</html>
